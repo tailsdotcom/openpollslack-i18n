@@ -15,6 +15,6 @@ RUN npm i
 # Switch to non-root user
 RUN chown -R app:app /usr/app
 USER app
-
+RUN rm -rf /usr/app/config && ln -s /config /usr/app/config
 # Node API setup
 CMD ["node", "index.js"]
