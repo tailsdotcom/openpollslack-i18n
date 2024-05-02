@@ -54,6 +54,7 @@ Just type `/poll` (without any options) in the channel that you want to post!
 ```
 /poll
 ```
+(If `/poll` is being used by other app you can also use `/openpoll`)
 ![poll-modal-en-v4.png](./assets/poll-modal-en-v4.png)
 
 ### Simple poll via command
@@ -251,7 +252,9 @@ Usage:
 ```
 
 ## Self-host: Server configuration (config/default.json)
-- `mongo_url`: the url to connect to your mongo database
+- `command`: Slash command
+- `command2`: Slash command
+- `bot_name`: Bot name
 - `mongo_db_name`: your mongo database name (Main DB)
 - `app_lang` for translation (Please put language file in language folder), Translate some text to Thai (th-ภาษาไทย)
 - `app_lang_user_selectable` if set to `true`; Let user who create poll (Via Modal) select language of poll UI 

@@ -59,7 +59,7 @@ const gLogLevelBolt = config.get('log_level_bolt');
 const gLogLevelBoltFile = config.get('log_level_bolt_file');
 const gLogToFile = config.get('log_to_file');
 const gScheduleLimitHr = config.get('schedule_limit_hrs');
-const gScheduleMaxRun = config.get('schedule_max_run');
+const gScheduleMaxRun = parseInt(config.get('schedule_max_run'));
 const gScheduleAutoDeleteDay = config.get('schedule_auto_delete_invalid_day');
 
 const validTeamOverrideConfigTF = ["create_via_cmd_only","app_lang_user_selectable","menu_at_the_end","compact_ui","show_divider","show_help_link","show_command_info","true_anonymous","add_number_emoji_to_choice","add_number_emoji_to_choice_btn","delete_data_on_poll_delete","app_allow_dm"];
@@ -336,7 +336,7 @@ const checkAndExecuteTasks = async () => {
       let taskRunCounter = 1;
       let taskRunMax = gScheduleMaxRun;
       if(task.hasOwnProperty('run_counter')) taskRunCounter = task.run_counter + 1;
-      if(task.hasOwnProperty('run_max')) taskRunMax = task.run_max;
+      if(task.hasOwnProperty('run_max')) taskRunMax = Math.min(task.run_max,gScheduleMaxRun);
       let cmdNote = `Run: ${taskRunCounter} of ${taskRunMax}`;
 
       if(task.hasOwnProperty('created_user_id')) mTaskOwner = task.created_user_id;
@@ -964,6 +964,13 @@ const postChat = async (url,type,requestBody) => {
     ) {
       logger.error('Team not found/not granted error : ignored');
       ret.message = "Team not found/not grante error : ignored"+` ${addChNotFoundErr}`;
+    }
+    else if (
+        e && e.data && e.data && e.data.error
+        && 'message_not_found' === e.data.error
+    ) {
+      logger.error('message_not_found error : ignored');
+      ret.message = "message_not_found error : ignored"+` ${addChNotFoundErr}`;
     } else {
       logger.error(e);
       console.log(e);
@@ -1765,7 +1772,7 @@ async function processCommand(ack, body, client, command, context, say, respond)
                 cmdBody = cmdBody.substring(inputPara.length).trim();
 
                 if (!isNaN(parseInt(inputPara)) && parseInt(inputPara) >= 1) {
-                  schMAXRUN = parseInt(inputPara);
+                  schMAXRUN = Math.min(parseInt(inputPara), gScheduleMaxRun);
                 } else {
                   let mRequestBody = {
                     token: context.botToken,
